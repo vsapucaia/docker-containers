@@ -1,0 +1,15 @@
+# original docker: gisce/tilemill
+version: '3'
+services:
+  app:
+    build: ./
+    image: gisce/tilemill
+    ports:
+        - "20008:20008"
+        - "20009:20009"
+    # entrypoint: /bin/bash
+    working_dir: /root/Documents/MapBox/project
+    volumes:
+      - .:/app
+      - ./project:/root/Documents/MapBox/project
+      - ./export:/root/Documents/MapBox/export

@@ -1,0 +1,61 @@
+# attach osm2pgsql container
+docker ps -a
+docker exec -i -t da9840994cdf /bin/bash
+
+# change OSM-Bright
+cd /usr/local/src/osm-bright/OSMBright 		#styles
+cd /usr/local/src/osm-bright/shp/			#shapes
+
+# datasource setup
+cd /usr/local/bin
+chmod 775 datasource-settings.sh
+
+# renderd
+/usr/local/etc/renderd.conf
+
+# mod_tile
+cd /var/lib/mod_tile
+
+# refresh XML
+millstone project.mml > project.local.mml
+carto project.local.mml > style.xml
+
+# fix the bug of OSM populated places
+# ATTACH TO WEB CONTAINER
+cd /usr/local/src/osm-bright/shp
+mkdir ne_10m_populated_places
+cd ne_10m_populated_places
+wget http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_populated_places.zip
+unzip ne_10m_populated_places.zip
+rm ne_10m_populated_places.zip
+shapeindex ne_10m_populated_places.shp
+
+
+
+# IMPORT OSM DATA: osm2pgpsql
+################################################
+# connect to psql
+psql -h pg -p 5432 -U postgres postgres
+// pass: pa55w0rd
+
+# import to POSTGIS
+osm2pgsql --hstore-all --create -d osm_berlin -U postgres -W -H pg -P 5432 berlin-latest.osm.pbf
+osm2pgsql --hstore-all --create -d postgres -U postgres -W -H pg -P 5432 berlin-latest.osm.pbf
+
+# change search path to choose the schema
+show search_path
+ALTER ROLE geo SET search_path TO osm, "$user", public, topology, sde;
+
+# connect to homeday.staging
+psql -h staging.homeday.de -p 5432 -U geo geo_staging
+osm2pgsql --create --hstore-all --slim --proj 3857 -C 6000 -d geo_staging -U geo -W -H staging.homeday.de -P 5432 germany-latest.osm.pbf
+psql -U geo -W -h localhost -d geo_staging
+osm2pgsql --create --hstore-all --slim --proj 3857 -C 6000 -d geo_staging -U geo -W -H localhost germany-latest.osm.pbf
+
+
+ALTER ROLE geo SET search_path TO "$user", public, topology, sde;
+
+
+# IMPORT SHAPE DATA: ogr2ogr
+################################################
+ogr2ogr -f "PostgreSQL" PG:"host=localhost user=postgres dbname=postgres password=pa55w0rd port=25432" -nln "berlin" -nlt PROMOTE_TO_MULTI -a_srs "EPSG:3857" ./berlin.shp

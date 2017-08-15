@@ -1,0 +1,1 @@
+docker run --restart=always -d -p 8081:8080 -p 15432:5432 --name nominatim mediagis/nominatim:latest
