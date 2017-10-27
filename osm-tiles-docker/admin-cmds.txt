@@ -1,6 +1,6 @@
 # attach osm2pgsql container
 docker ps -a
-docker exec -i -t da9840994cdf /bin/bash
+docker exec -i -t 4ce5dddcc258 /bin/bash
 
 # change OSM-Bright
 cd /usr/local/src/osm-bright/OSMBright 		#styles
