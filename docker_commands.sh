@@ -1,17 +1,14 @@
-# Docker container initialization
+# docker build giving a name to the image (. indicates the path of Dockerfile)
+# to refresh the requirements.txt
+docker build -t process_qa_27 .
 
-touch docker-compose.yml
+# run/start container
+docker run -it --rm [image name]
+# start container opening bash
+docker run -i -t process_qa_27 /bin/bash
 
-# Inside yml:
-version: '3'
-services:
-  app:
-    image: gisce/tilemill
-    # entrypoint: /bin/bash
-    working_dir: /app
-    volumes:
-      - .:/app
-
+# Attach a container
+docker exec -i -t b2d2a541ed9e /bin/bash
 
 # IMAGES
 docker images
@@ -22,7 +19,7 @@ docker rmi [Image_name | Image_id]
 docker ps -a
 
 # remove containers
-docker stop $(docker ps -a -q)
+docker stop $(docker ps -a -q) 
 docker rm $(docker ps -a -q)
 
 # running container commands
@@ -33,6 +30,3 @@ service --status-all
 
 # commit container to another image
 docker commit -c "EXPOSE 20008-20009" 2e9ba3f563cb gisce/tilemill:mbutil
-
-# Attach a container
-docker exec -i -t a00b5bd21c30 /bin/bash
