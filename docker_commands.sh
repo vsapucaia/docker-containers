@@ -8,7 +8,7 @@ docker run -it --rm [image name]
 docker run -i -t process_qa_27 /bin/bash
 
 # Attach a container
-docker exec -i -t b2d2a541ed9e /bin/bash
+docker exec -i -t 0e48e3c2d156 /bin/bash
 
 # IMAGES
 docker images
@@ -24,7 +24,7 @@ docker rm $(docker ps -a -q)
 
 # running container commands
 docker-compose run app date
-docker-compose run app bash
+docker-compose run mapnik-psql bash
 docker-compose up
 service --status-all
 

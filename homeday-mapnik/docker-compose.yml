@@ -1,0 +1,14 @@
+version: '3'
+services:
+  homeday-mapnik:
+    build: ./mapnik
+    image: homeday-mapnik
+    env_file: .env 
+    extra_hosts:
+      - "pg:52.58.22.175"
+  # mapnik-psql:
+  #   build: ./psql
+  #   image: mapnik-psql
+  #   env_file: .env 
+  #   extra_hosts:
+  #     - "pg:52.58.22.175"

@@ -1,2 +1,5 @@
 # export folders
 export
+
+# environment files
+.env
