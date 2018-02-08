@@ -4,10 +4,8 @@ FROM ubuntu:16.04
 RUN sed -e s%http://archive.ubuntu.com/ubuntu/%mirror://mirrors.ubuntu.com/mirrors.txt% -i /etc/apt/sources.list \
         && apt-get update \
         && apt-get dist-upgrade -y \
-        && apt-get install -y python-setuptools python-pip bzip2 \           
-            # this line is not needed on hosteurope
-            git nano python3 tar wget zip unzip apache2 \ 
-            # #######
+        && apt-get install -y python-setuptools python-pip bzip2 \
+            git nano python3 tar wget zip unzip apache2 \
             gdal-bin libgdal1-dev dh-autoreconf \
             fonts-noto-cjk fonts-noto-hinted fonts-noto-unhinted ttf-unifont \
             libboost-all-dev build-essential autoconf libtool libxml2-dev libgeos-dev \
@@ -29,7 +27,7 @@ RUN apt-get update \
      && python -c 'import mapnik'
 
 # mod_tile
-RUN cd /usr/src \
+RUN mkdir /home/renderer/src && cd /home/renderer/src \
     && git clone git://github.com/SomeoneElseOSM/mod_tile.git \
     && cd mod_tile \
     && ./autogen.sh \
@@ -40,7 +38,7 @@ RUN cd /usr/src \
     && ldconfig
 
 # osm style
-RUN cd /usr/src \
+RUN cd /home/renderer/src \
     && git clone git://github.com/gravitystorm/openstreetmap-carto.git \
     && cd openstreetmap-carto \
     && apt-get install -y npm nodejs-legacy \
@@ -48,16 +46,19 @@ RUN cd /usr/src \
     && carto project.mml > mapnik.xml
 
 # HOMEDAY services
-# RUN cd /usr/src \
-#     && git clone https://github.com/homeday-de/mapnik.git \
-    # && cd mapnik \
-    # && wget http://data.openstreetmapdata.com/simplified-land-polygons-complete-3857.zip \
-    # && wget http://data.openstreetmapdata.com/land-polygons-split-3857.zip \
-    # && unzip simplified-land-polygons-complete-3857.zip \
-    # && unzip land-polygons-split-3857.zip \
-    # && rm *.zip \
-    # && shapeindex simplified-land-polygons-complete-3857/simplified_land_polygons.shp \
-    # && shapeindex land-polygons-split-3857/land_polygons.shp
+RUN cd /home/renderer/src \
+    && git clone https://github.com/homeday-de/mapnik.git \
+    && cd mapnik \
+    && wget http://data.openstreetmapdata.com/simplified-land-polygons-complete-3857.zip \
+    && wget http://data.openstreetmapdata.com/land-polygons-split-3857.zip \
+    && unzip simplified-land-polygons-complete-3857.zip \
+    && unzip land-polygons-split-3857.zip \
+    && rm *.zip \
+    && shapeindex simplified-land-polygons-complete-3857/simplified_land_polygons.shp \
+    && shapeindex land-polygons-split-3857/land_polygons.shp \
+    && mkdir shp \
+    && mv simplified-land-polygons-complete-3857/ shp/ \
+    && mv land-polygons-split-3857/ shp/
 
 # configure renderd
 #RUN cp /usr/local/etc/renderd.conf /usr/local/etc/renderd.conf.original \

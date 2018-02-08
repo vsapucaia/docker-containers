@@ -5,10 +5,10 @@ docker build -t process_qa_27 .
 # run/start container
 docker run -it --rm [image name]
 # start container opening bash
-docker run -i -t process_qa_27 /bin/bash
+docker run -p 8080:80 -i -t 7fadaca3867f /bin/bash
 
 # Attach a container
-docker exec -i -t 0e48e3c2d156 /bin/bash
+docker exec -i -t efab6ccf7ab2 /bin/bash
 
 # IMAGES
 docker images
@@ -22,11 +22,22 @@ docker ps -a
 docker stop $(docker ps -a -q) 
 docker rm $(docker ps -a -q)
 
-# running container commands
-docker-compose run app date
-docker-compose run mapnik-psql bash
-docker-compose up
-service --status-all
-
 # commit container to another image
 docker commit -c "EXPOSE 20008-20009" 2e9ba3f563cb gisce/tilemill:mbutil
+
+# DOCKER-COMPOSE
+#_-----------------------------
+# running container commands
+docker-compose up
+docker-compose run app date
+docker-compose run mapnik-psql bash
+
+# rebuild image
+docker-compose build
+
+#check docker services
+service --status-all
+
+
+# restart mapnik container
+docker exec -t -i mapnik_mapnik_1 supervisorctl restart renderd apache2
