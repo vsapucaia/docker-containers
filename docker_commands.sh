@@ -1,3 +1,12 @@
+#docker basic hello-world with ngnix
+docker pull nginxdemos/hello
+docker images
+# check image hash and
+docker run -p 27001:80 -i -t aedf47d433f1
+# access on localhost:27001
+
+
+
 # docker build giving a name to the image (. indicates the path of Dockerfile)
 # to refresh the requirements.txt
 docker build -t process_qa_27 .
